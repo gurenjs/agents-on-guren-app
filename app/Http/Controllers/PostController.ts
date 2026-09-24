@@ -3,7 +3,7 @@ import { pages } from '@/.guren/pages.gen'
 import { Post } from '../../Models/Post.js'
 import type { UserRecord } from '../../Models/User.js'
 import { PostResource, type PostResourceData } from '../Resources/PostResource.js'
-import { PostIdParamSchema, PostPayloadSchema, PostSearchSchema, ListPostsQuerySchema } from '../Validators/PostValidator.js'
+import { PostIdParamSchema, ListPostsQuerySchema } from '../Validators/PostValidator.js'
 
 type PostsIndexProps = PaginatedPageProps<PostResourceData>
 
@@ -28,15 +28,15 @@ export default class PostController extends Controller {
   // Serves the HTTP QUERY route `posts.search` — a safe read that carries its
   // criteria in a JSON body. Matches posts with any keyword in title or
   // excerpt; `%` and `_` in a keyword act as SQL LIKE wildcards, which this
-  // starter treats as a feature. All keyword OR pairs sit inside one
-  // `where(callback)`, keeping this an any-keyword match while AND filters
-  // added later (a published flag, tenancy) apply to every hit instead of
-  // being OR'd away.
+  // starter treats as a feature.
   async search(): Promise<Response> {
-    const { keywords, limit } = await this.validateBody(PostSearchSchema)
+    const { keywords, limit } = this.validated('posts.search').body
 
     const posts = await Post.newQuery()
       .with('author')
+      // All keyword OR pairs sit inside one callback, keeping this an
+      // any-keyword match while AND filters added later (a published flag,
+      // tenancy) apply to every hit instead of being OR'd away.
       .where((q) => {
         for (const keyword of keywords) {
           const pattern = `%${keyword}%`
@@ -67,7 +67,7 @@ export default class PostController extends Controller {
   async store(): Promise<Response> {
     await this.authorize('create', Post)
     const author = await this.auth.userOrFail<UserRecord>()
-    const data = await this.validateBody(PostPayloadSchema)
+    const { body: data } = this.validated('posts.store')
     // forceCreate, because `authorId` is deliberately absent from Post.fillable:
     // it comes from the session, and a request must never be able to set it.
     const post = await Post.forceCreate({ ...data, authorId: author.id })
@@ -90,7 +90,7 @@ export default class PostController extends Controller {
     const post = await Post.findOrFail(id)
     await this.authorize('update', [Post, post])
 
-    const data = await this.validateBody(PostPayloadSchema)
+    const { body: data } = this.validated('posts.update')
     await Post.update({ id: post.id }, data)
 
     return this.redirect(`/posts/${post.id}`)
