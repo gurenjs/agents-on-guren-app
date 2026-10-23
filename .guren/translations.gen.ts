@@ -6,6 +6,8 @@
  * keys are reported by `guren check --i18n`, not here.
  */
 export type TranslationKey =
+  | 'auth.throttle'
+  | 'auth.too_many_requests'
   | 'messages.welcome'
 
 // Type this app's translation helpers via declaration merging:

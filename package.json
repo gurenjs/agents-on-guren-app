@@ -14,6 +14,7 @@
     "test": "bun test",
     "build": "bun run codegen && bunx vite build && bunx vite build --ssr",
     "preview": "NODE_ENV=production bun bin/serve.ts",
+    "start": "NODE_ENV=production bun bin/serve.ts",
     "db:make": "bunx guren make:migration",
     "db:migrate": "bunx guren db:migrate",
     "db:reset": "bunx guren db:reset",
@@ -21,10 +22,10 @@
     "db:seed": "bunx guren db:seed"
   },
   "dependencies": {
-    "@guren/cli": "^2.27.0",
-    "@guren/core": "^1.21.0",
+    "@guren/cli": "^2.32.0",
+    "@guren/core": "^1.25.0",
     "@guren/inertia-client": "^1.2.2",
-    "@guren/orm": "^2.12.0",
+    "@guren/orm": "^2.15.0",
     "@inertiajs/react": "^3.6.1",
     "drizzle-orm": "1.0.0-rc.4",
     "react": "^19.0.0",
@@ -32,7 +33,7 @@
     "zod": "^4.5.0"
   },
   "devDependencies": {
-    "@guren/testing": "^1.14.0",
+    "@guren/testing": "^1.14.2",
     "@tailwindcss/vite": "^4.2.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
